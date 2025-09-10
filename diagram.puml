@@ -1,0 +1,71 @@
+@startuml
+class Movie {
+  - Long id
+  - String title
+  - int duration
+  - String genre
+}
+
+class Session {
+  - Long id
+  - Date dateTime
+  - int availableSeats
+}
+
+class Ticket {
+  - Long id
+  - String seatNumber
+  - TicketStatus status
+}
+
+class User {
+  - Long id
+  - String name
+  - String email
+  - UserRole role
+}
+
+enum TicketStatus {
+  RESERVED
+  CANCELLED
+  CONFIRMED
+}
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+}
+
+Movie "1" -- "many" Session
+Session "1" -- "many" Ticket
+User "1" -- "many" Ticket
+@enduml
+
+@startuml
+actor Admin
+actor Customer
+
+rectangle CinemaSystem {
+  Admin --> (Manage Movies)
+  Admin --> (Manage Sessions)
+
+  Customer --> (Reserve Ticket)
+  Customer --> (Cancel Ticket)
+  Customer --> (Confirm Payment)
+}
+@enduml
+
+@startuml
+actor Customer
+participant "API (REST)" as API
+participant "TicketService" as Service
+database "Database" as DB
+queue "Kafka" as Kafka
+
+Customer -> API : POST /tickets
+API -> Service : validate request
+Service -> DB : save ticket
+DB --> Service : success
+Service -> Kafka : publish "ticket.reserved"
+API --> Customer : 201 Created
+@enduml
