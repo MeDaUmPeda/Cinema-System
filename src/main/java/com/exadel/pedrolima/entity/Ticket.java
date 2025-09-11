@@ -1,13 +1,23 @@
 package com.exadel.pedrolima.entity;
 
 import com.exadel.pedrolima.entity.enums.TicketStatus;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Entity
+@Table(name="tickets")
 public class Ticket {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String seatNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TicketStatus status;
 
     public Ticket(){

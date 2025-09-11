@@ -1,0 +1,39 @@
+@startuml
+entity "Movie" as movie {
+  * id : BIGSERIAL [PK]
+  --
+  title : varchar
+  duration : int
+  genre : varchar
+}
+
+entity "Session" as session {
+  * id : BIGSERIAL [PK]
+  --
+  date_time : timestamp
+  available_seats : int
+  movie_id : bigint [FK]
+}
+
+entity "Ticket" as ticket {
+  * id : BIGSERIAL [PK]
+  --
+  seat_number : varchar
+  status : varchar
+  session_id : bigint [FK]
+  user_id : bigint [FK]
+}
+
+entity "User" as user {
+  * id : BIGSERIAL [PK]
+  --
+  name : varchar
+  email : varchar
+  role : varchar
+}
+
+' Relationships
+movie ||--o{ session : "has"
+session ||--o{ ticket : "has"
+user ||--o{ ticket : "owns"
+@enduml

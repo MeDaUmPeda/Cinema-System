@@ -1,14 +1,26 @@
 package com.exadel.pedrolima.entity;
 
 import com.exadel.pedrolima.entity.enums.UserRole;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Entity
+@Table(name= "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String Name;
-    private  String Email;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(unique = true, nullable = false)
+    private  String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole role;
 
     public User(){
@@ -17,8 +29,8 @@ public class User {
     public User(Long id, UserRole role, String email, String name) {
         this.id = id;
         this.role = role;
-        Email = email;
-        Name = name;
+        this.email = email;
+        this.name = name;
     }
 
     public Long getId() {
@@ -35,39 +47,39 @@ public class User {
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        Email = email;
+        this.email = email;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(Name, user.Name) && Objects.equals(Email, user.Email) && role == user.role;
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && role == user.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, Name, Email, role);
+        return Objects.hash(id, name, email, role);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", Name='" + Name + '\'' +
-                ", Email='" + Email + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
                 ", role=" + role +
                 '}';
     }

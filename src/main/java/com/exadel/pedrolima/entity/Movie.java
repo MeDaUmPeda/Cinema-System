@@ -1,12 +1,23 @@
 package com.exadel.pedrolima.entity;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.Objects;
+@Entity
+@Table(name="movies")
 public class Movie {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private Integer duration;
+
+    @Column(nullable = false)
     private String genre;
 
     public Movie(){

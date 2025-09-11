@@ -1,12 +1,22 @@
 package com.exadel.pedrolima.entity;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.Objects;
 
+@Entity
+@Table(name="sessions")
 public class Session {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private Date dateTime;
+
+    @Column(nullable = false)
     private Integer availableSeats;
 
     public Session(){
