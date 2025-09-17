@@ -2,7 +2,7 @@ package com.exadel.pedrolima.Cinema.System.controller;
 
 import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
 import com.exadel.pedrolima.entity.Session;
-import com.exadel.pedrolima.entity.User;
+import com.exadel.pedrolima.entity.Ticket;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +27,13 @@ public class SessionController {
     public ResponseEntity<Session> getSessionById(@PathVariable Long id) {
         return sessionRepository.findById(id)
                 .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/tickets")
+    public ResponseEntity<List<Ticket>> getTicketsBySession(@PathVariable Long id) {
+        return sessionRepository.findById(id)
+                .map(session -> ResponseEntity.ok(session.getTickets()))
                 .orElse(ResponseEntity.notFound().build());
     }
 

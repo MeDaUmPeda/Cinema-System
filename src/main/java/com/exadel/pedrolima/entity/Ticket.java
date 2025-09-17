@@ -20,14 +20,24 @@ public class Ticket {
     @Column(nullable = false)
     private TicketStatus status;
 
+    @ManyToOne
+    @JoinColumn(name = "session_id", nullable = false)
+    private Session session;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Ticket(){
 
     }
 
-    public Ticket(Long id, String seatNumber, TicketStatus status) {
+    public Ticket(Long id, String seatNumber, TicketStatus status, Session session, User user) {
         this.id = id;
         this.seatNumber = seatNumber;
         this.status = status;
+        this.session = session;
+        this.user = user;
     }
 
     public Long getId() {
@@ -50,6 +60,22 @@ public class Ticket {
         this.status = status;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -68,6 +94,8 @@ public class Ticket {
                 "id=" + id +
                 ", seatNumber='" + seatNumber + '\'' +
                 ", status=" + status +
+                ", session=" + session +
+                ", user=" + user +
                 '}';
     }
 }

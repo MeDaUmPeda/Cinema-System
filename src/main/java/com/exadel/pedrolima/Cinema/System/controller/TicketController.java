@@ -1,7 +1,10 @@
 package com.exadel.pedrolima.Cinema.System.controller;
 
+import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
 import com.exadel.pedrolima.Cinema.System.repository.TicketRepository;
+import com.exadel.pedrolima.entity.Session;
 import com.exadel.pedrolima.entity.Ticket;
+import com.exadel.pedrolima.entity.enums.TicketStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +15,11 @@ import java.util.List;
 public class TicketController {
 
     private final TicketRepository ticketRepository;
+    private final SessionRepository sessionRepository;
 
-    public TicketController(TicketRepository ticketRepository) {
+    public TicketController(TicketRepository ticketRepository, SessionRepository sessionRepository) {
         this.ticketRepository = ticketRepository;
+        this.sessionRepository = sessionRepository;
     }
 
     @GetMapping
@@ -43,6 +48,21 @@ public class TicketController {
                    return ResponseEntity.ok(ticketRepository.save(ticket));
                })
                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Ticket> cancelTicket(@PathVariable Long id){
+        return ticketRepository.findById(id)
+                .map(ticket -> {
+                    ticket.setStatus(TicketStatus.CANCELED);
+
+                    Session session = ticket.getSession();
+                    session.setAvailableSeats(session.getAvailableSeats() + 1);
+                    sessionRepository.save(session);
+
+                    return ResponseEntity.ok(ticketRepository.save(ticket));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
