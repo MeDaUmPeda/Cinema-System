@@ -1,7 +1,9 @@
 package com.exadel.pedrolima.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,8 +17,9 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
     @Column(nullable = false)
-    private Date dateTime;
+    private LocalDateTime dateTime;
 
     @Column(nullable = false)
     private Integer availableSeats;
@@ -32,7 +35,7 @@ public class Session {
 
     }
 
-    public Session(Long id, Date dateTime, Integer availableSeats, Movie movie, List<Ticket> tickets) {
+    public Session(Long id, LocalDateTime dateTime, Integer availableSeats, Movie movie, List<Ticket> tickets) {
         this.id = id;
         this.dateTime = dateTime;
         this.availableSeats = availableSeats;
@@ -44,11 +47,11 @@ public class Session {
         return id;
     }
 
-    public Date getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
