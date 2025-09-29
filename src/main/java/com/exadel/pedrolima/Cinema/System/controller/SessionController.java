@@ -2,13 +2,11 @@ package com.exadel.pedrolima.Cinema.System.controller;
 
 import com.exadel.pedrolima.Cinema.System.DTO.SessionRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.SessionResponse;
-import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
 import com.exadel.pedrolima.Cinema.System.service.SessionService;
-import com.exadel.pedrolima.entity.Session;
-import com.exadel.pedrolima.entity.Ticket;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,28 +27,28 @@ public class SessionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SessionResponse> getSessionById(@PathVariable Long id) {
-        return sessionService.getSessionById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(sessionService.getSessionById(id));
     }
 
     @GetMapping("/date")
-    public List<SessionResponse> getSessionsByDate(@RequestParam("date") LocalDateTime date) {
-        return sessionService.getSessionsByDate(date);
+    public ResponseEntity<List<SessionResponse>> getSessionsByDate(@RequestParam("date") LocalDateTime date) {
+        return ResponseEntity.ok(sessionService.getSessionsByDate(date));
     }
 
     @PostMapping
     public ResponseEntity<SessionResponse> createSession(@RequestBody SessionRequest request) {
-        return sessionService.createSession(request).map(ResponseEntity::ok).orElse(ResponseEntity.badRequest().build());
+        SessionResponse createdSession = sessionService.createSession(request);
+        return ResponseEntity.created(URI.create("/api/sessions" + createdSession.getId())).body(createdSession);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SessionResponse> updatedSession(@PathVariable Long id, @RequestBody SessionRequest request) {
-        return sessionService.updateSession(id, request).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(sessionService.updateSession(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSession(@PathVariable Long id) {
-        return sessionService.deleteSessionById(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        sessionService.deleteSessionById(id);
+        return ResponseEntity.noContent().build();
     }
 }

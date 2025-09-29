@@ -2,15 +2,11 @@ package com.exadel.pedrolima.Cinema.System.controller;
 
 import com.exadel.pedrolima.Cinema.System.DTO.MovieRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.MovieResponse;
-import com.exadel.pedrolima.Cinema.System.repository.MovieRepository;
-import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
 import com.exadel.pedrolima.Cinema.System.service.MovieService;
-import com.exadel.pedrolima.entity.Movie;
-import com.exadel.pedrolima.entity.Session;
-import com.exadel.pedrolima.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,19 +21,20 @@ public class MovieController {
 
     //Get
     @GetMapping
-    public List<MovieResponse> getAllMovies(){
-        return movieService.getAllMovies();
+    public ResponseEntity<List<MovieResponse>> getAllMovies(){
+        return ResponseEntity.ok(movieService.getAllMovies());
     }
 
     //Get (id)
     @GetMapping("/{id}")
     public ResponseEntity<MovieResponse> getMovieById(@PathVariable Long id){
-        return movieService.getMovieById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(movieService.getMovieById(id));
     }
 
     @PostMapping
     public ResponseEntity<MovieResponse> createMovie(@RequestBody MovieRequest request){
-        return ResponseEntity.ok(movieService.createMovie(request));
+        MovieResponse created = movieService.createMovie(request);
+        return ResponseEntity.created(URI.create("api/movies/" + created.getId())).body(created);
     }
 
 //    @PostMapping("/{movieId}/sessions")
@@ -52,14 +49,13 @@ public class MovieController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MovieResponse> updateMovie(@PathVariable Long id, @RequestBody MovieRequest request){
-        return movieService.updateMovie(id, request).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(movieService.updateMovie(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable Long id){
-        return movieService.deleteMovie(id)
-                ?  ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        movieService.deleteMovie(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

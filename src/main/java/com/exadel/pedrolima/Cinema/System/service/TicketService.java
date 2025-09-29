@@ -2,6 +2,7 @@ package com.exadel.pedrolima.Cinema.System.service;
 
 import com.exadel.pedrolima.Cinema.System.DTO.TicketRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.TicketResponse;
+import com.exadel.pedrolima.Cinema.System.Exception.ResourceNotFoundException;
 import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
 import com.exadel.pedrolima.Cinema.System.repository.TicketRepository;
 import com.exadel.pedrolima.Cinema.System.repository.UserRepository;
@@ -12,7 +13,6 @@ import com.exadel.pedrolima.entity.enums.TicketStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,56 +36,49 @@ public class TicketService {
         return ticketRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
-    public Optional<TicketResponse> getTicketById(Long id){
-        return ticketRepository.findById(id).map(this::convertToDto);
+    public TicketResponse getTicketById(Long id){
+        return ticketRepository.findById(id).map(this::convertToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket with id: " + id + " not found"));
     }
 
-    public Optional<TicketResponse> createTicket(TicketRequest request){
-        Optional<User> userOpt = userRepository.findById(request.getUserId());
-        Optional<Session> sessionOpt = sessionRepository.findById(request.getSessionId());
+    public TicketResponse createTicket(TicketRequest request){
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Session session = sessionRepository.findById(request.getSessionId()).orElseThrow(() -> new ResourceNotFoundException("Session not found"));
 
-        if(userOpt.isEmpty() || sessionOpt.isEmpty()){
-            return Optional.empty();
-        }
-
-        Session session = sessionOpt.get();
         if(session.getAvailableSeats() <= 0){
-            return Optional.empty();
+            throw new ResourceNotFoundException("We don't have enough available seats in this session");
         }
 
         Ticket ticket = new Ticket();
         ticket.setSeatNumber(request.getSeatNumber());
-        ticket.setStatus(request.getStatus());
-        ticket.setUser(userOpt.get());
+        ticket.setStatus(request.getStatus() != null ? request.getStatus() : TicketStatus.RESERVED);
+        ticket.setUser(user);
         ticket.setSession(session);
 
         session.setAvailableSeats(session.getAvailableSeats() - 1);
         sessionRepository.save(session);
 
         Ticket savedTicket = ticketRepository.save(ticket);
-        return Optional.of(convertToDto(savedTicket));
+        return convertToDto(savedTicket);
     }
 
-
-
-    public boolean deleteTicketById(Long id){
+    public void deleteTicketById(Long id){
         if(ticketRepository.existsById(id)){
-            ticketRepository.deleteById(id);
-            return true;
+            throw new ResourceNotFoundException("Ticket with id: " + id + " not found");
         }
-        return false;
+        ticketRepository.deleteById(id);
     }
 
-    public Optional<TicketResponse> updateTicket(Long id, TicketRequest request){
+    public TicketResponse updateTicket(Long id, TicketRequest request){
         return ticketRepository.findById(id).map( ticket -> {
             ticket.setSeatNumber(request.getSeatNumber());
             ticket.setStatus(request.getStatus());
             Ticket saved = ticketRepository.save(ticket);
             return convertToDto(saved);
-        });
+        }).orElseThrow(() -> new ResourceNotFoundException("Ticket with id: " + id + " not found"));
     }
 
-    public Optional<TicketResponse> cancelTicket(Long id){
+    public TicketResponse cancelTicket(Long id){
         return ticketRepository.findById(id).map(ticket -> {
             ticket.setStatus(TicketStatus.CANCELED);
 
@@ -95,7 +88,7 @@ public class TicketService {
 
             Ticket saved = ticketRepository.save(ticket);
             return convertToDto(saved);
-        });
+        }).orElseThrow(() -> new ResourceNotFoundException("Ticket with id: " + id + " not found"));
     }
 
 }

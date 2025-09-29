@@ -5,16 +5,16 @@ import java.time.LocalDateTime;
 public class SessionRequest {
 
     private LocalDateTime dateTime;
-    private Integer avaibleSeats;
+    private Integer availableSeats;
     private Long movieId;
 
     public SessionRequest(){
 
     }
 
-    public SessionRequest(LocalDateTime dateTime, Integer avaibleSeats, Long movieId) {
+    public SessionRequest(LocalDateTime dateTime, Integer availableSeats, Long movieId) {
         this.dateTime = dateTime;
-        this.avaibleSeats = avaibleSeats;
+        this.availableSeats = availableSeats;
         this.movieId = movieId;
     }
 
@@ -26,12 +26,12 @@ public class SessionRequest {
         this.dateTime = dateTime;
     }
 
-    public Integer getAvaibleSeats() {
-        return avaibleSeats;
+    public Integer getAvailableSeats() {
+        return availableSeats;
     }
 
-    public void setAvaibleSeats(Integer avaibleSeats) {
-        this.avaibleSeats = avaibleSeats;
+    public void setAvailableSeats(Integer availableSeats) {
+        this.availableSeats = availableSeats;
     }
 
     public Long getMovieId() {

@@ -2,8 +2,11 @@ package com.exadel.pedrolima.Cinema.System.service;
 
 import com.exadel.pedrolima.Cinema.System.DTO.SessionRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.SessionResponse;
+import com.exadel.pedrolima.Cinema.System.Exception.BadRequestException;
+import com.exadel.pedrolima.Cinema.System.Exception.ResourceNotFoundException;
 import com.exadel.pedrolima.Cinema.System.repository.MovieRepository;
 import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
+import com.exadel.pedrolima.entity.Movie;
 import com.exadel.pedrolima.entity.Session;
 import org.springframework.stereotype.Service;
 
@@ -34,39 +37,52 @@ public class SessionService {
         return sessionRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
-    public Optional<SessionResponse> getSessionById(Long id) {
-        return sessionRepository.findById(id).map(this::convertToDto);
+    public SessionResponse getSessionById(Long id) {
+        Session session = sessionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("We can't find session with id: " + id));
+        return convertToDto(session);
     }
 
-    public Optional<SessionResponse> createSession(SessionRequest request) {
-        return movieRepository.findById(request.getMovieId()).map(movie -> {
-            Session session = new Session();
-            session.setDateTime(request.getDateTime());
-            session.setAvailableSeats(request.getAvaibleSeats());
-            session.setMovie(movie);
+    public SessionResponse createSession(SessionRequest request) {
+        Movie movie = movieRepository.findById(request.getMovieId())
+                .orElseThrow(() -> new ResourceNotFoundException("We can't find movie with id: " + request.getMovieId()));
 
-            Session saved = sessionRepository.save(session);
-            return convertToDto(saved);
-        });
+        if (request.getAvailableSeats() == null || request.getAvailableSeats() <= 0){
+            throw new BadRequestException("Available seats must be greater than 0");
+        }
+
+        Session session = new Session();
+        session.setDateTime(request.getDateTime());
+        session.setAvailableSeats(request.getAvailableSeats());
+        session.setMovie(movie);
+
+        Session saved = sessionRepository.save(session);
+        return convertToDto(saved);
+
     }
 
-    public Optional<SessionResponse> updateSession(Long id, SessionRequest request) {
-        return sessionRepository.findById(id).flatMap(session -> movieRepository.findById(request.getMovieId())
-                .map(movie -> {
-                    session.setDateTime(request.getDateTime());
-                    session.setAvailableSeats(request.getAvaibleSeats());
-                    session.setMovie(movie);
+    public SessionResponse updateSession(Long id, SessionRequest request) {
+        Session session = sessionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("We can't find this session with id: " + id));
 
-                    Session updated = sessionRepository.save(session);
-                    return convertToDto(updated);
-                }));
+        Movie movie = movieRepository.findById(request.getMovieId())
+                .orElseThrow(() -> new ResourceNotFoundException("We can't find movie with id: " + request.getMovieId()));
+
+        if(request.getAvailableSeats() == null || request.getAvailableSeats() <= 0){
+            throw new BadRequestException("Available seats must be greater than 0");
+        }
+
+        session.setDateTime(request.getDateTime());
+        session.setAvailableSeats(request.getAvailableSeats());
+        session.setMovie(movie);
+
+        Session updatedSession =  sessionRepository.save(session);
+        return convertToDto(updatedSession);
     }
 
-    public boolean deleteSessionById(Long id) {
-        return sessionRepository.findById(id).map(session -> {
-            sessionRepository.delete(session);
-            return true;
-        }).orElse(false);
+    public void deleteSessionById(Long id) {
+        Session session = sessionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("We can't find this session with id: " + id));
+                sessionRepository.delete(session);
     }
 
     public List<SessionResponse> getSessionsByDate(LocalDateTime date) {

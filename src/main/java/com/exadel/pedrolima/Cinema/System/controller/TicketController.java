@@ -2,15 +2,11 @@ package com.exadel.pedrolima.Cinema.System.controller;
 
 import com.exadel.pedrolima.Cinema.System.DTO.TicketRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.TicketResponse;
-import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
-import com.exadel.pedrolima.Cinema.System.repository.TicketRepository;
 import com.exadel.pedrolima.Cinema.System.service.TicketService;
-import com.exadel.pedrolima.entity.Session;
-import com.exadel.pedrolima.entity.Ticket;
-import com.exadel.pedrolima.entity.enums.TicketStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -24,41 +20,34 @@ public class TicketController {
     }
 
     @GetMapping
-    public List<TicketResponse> getAllTickets(){
-        return ticketService.getAllTickets();
+    public ResponseEntity<List<TicketResponse>> getAllTickets(){
+        return ResponseEntity.ok(ticketService.getAllTickets());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id){
-        return ticketService.getTicketById(id)
-                .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(ticketService.getTicketById(id));
     }
 
     @PostMapping
     public ResponseEntity<TicketResponse> createTicket(@RequestBody TicketRequest request) {
-        return ticketService.createTicket(request)
-                .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        TicketResponse createdTicket = ticketService.createTicket(request);
+        return ResponseEntity.created(URI.create("api/tickets/" + createdTicket.getId())).body(createdTicket);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TicketResponse> updateTicket(@PathVariable Long id, @RequestBody TicketRequest updatedTicket){
-       return ticketService.updateTicket(id, updatedTicket)
-               .map(ResponseEntity::ok)
-               .orElse(ResponseEntity.notFound().build());
+       return ResponseEntity.ok(ticketService.updateTicket(id, updatedTicket));
     }
 
     @PutMapping("/{id}/cancel")
     public ResponseEntity<TicketResponse> cancelTicket(@PathVariable Long id){
-        return ticketService.cancelTicket(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(ticketService.cancelTicket(id));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id){
-        if(ticketService.deleteTicketById(id)){
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        ticketService.deleteTicketById(id);
+        return ResponseEntity.noContent().build();
     }
 }
