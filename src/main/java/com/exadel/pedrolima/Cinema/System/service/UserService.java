@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.service;
 
-import com.exadel.pedrolima.Cinema.System.DTO.UserRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateUserRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.UserResponse;
 import com.exadel.pedrolima.Cinema.System.Exception.BadRequestException;
 import com.exadel.pedrolima.Cinema.System.Exception.ResourceNotFoundException;
@@ -29,12 +29,17 @@ public class UserService {
 
 
     public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(this::convertToDto).toList();
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .toList();
     }
 
     public UserResponse getUserById(Long id) {
         return userRepository.findById(id).map(this::convertToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("We can't find an user with id: " + id));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("We can't find an user with id: " + id)
+                );
     }
 
     public List<UserResponse> getUserByRole(UserRole role) {
@@ -45,7 +50,7 @@ public class UserService {
         return users.stream().map(this::convertToDto).toList();
     }
 
-    public UserResponse createUser(UserRequest request) {
+    public UserResponse createUser(CreateUserRequest request) {
         if(request.getEmail() == null || request.getEmail().isBlank()){
             throw new BadRequestException("Email is required");
         }
@@ -59,7 +64,7 @@ public class UserService {
         return convertToDto(userRepository.save(user));
     }
 
-    public UserResponse updateUser(Long id, UserRequest request) {
+    public UserResponse updateUser(Long id, CreateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("We can't find user with id: " + id));
         if(request.getEmail() == null || request.getEmail().isBlank()){

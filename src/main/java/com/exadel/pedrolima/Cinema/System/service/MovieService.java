@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.service;
 
-import com.exadel.pedrolima.Cinema.System.DTO.MovieRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateMovieRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.MovieResponse;
 import com.exadel.pedrolima.Cinema.System.Exception.BusinessException;
 import com.exadel.pedrolima.Cinema.System.Exception.ResourceNotFoundException;
@@ -22,7 +22,10 @@ public class MovieService {
     }
 
     private MovieResponse convertToDto(Movie movie) {
-        List<Long> sessionIds = movie.getSessions().stream().map(Session::getId).collect(Collectors.toList());
+        List<Long> sessionIds = movie.getSessions()
+                .stream()
+                .map(Session::getId)
+                .collect(Collectors.toList());
 
         return new MovieResponse(
                 movie.getId(), movie.getTitle(), movie.getDuration(), movie.getGenre(), sessionIds
@@ -34,10 +37,14 @@ public class MovieService {
     }
 
     public MovieResponse getMovieById(Long id){
-        return movieRepository.findById(id).map(this::convertToDto).orElseThrow(() -> new ResourceNotFoundException("Movie with id " + id + " not found"));
+        return movieRepository.findById(id)
+                .map(this::convertToDto)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Movie with id " + id + " not found")
+                );
     }
 
-    public MovieResponse createMovie(MovieRequest request) {
+    public MovieResponse createMovie(CreateMovieRequest request) {
         if(request.getTitle() == null || request.getTitle().isBlank()){
             throw new BusinessException("The title can't be empty");
         }
@@ -52,7 +59,7 @@ public class MovieService {
         return convertToDto(movieRepository.save(movie));
     }
 
-    public MovieResponse updateMovie(Long id, MovieRequest request) {
+    public MovieResponse updateMovie(Long id, CreateMovieRequest request) {
         return movieRepository.findById(id).map(movie -> {
             if(request.getTitle() == null || request.getTitle().isBlank()){
                 throw new BusinessException("The title can't be empty");

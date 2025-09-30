@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.controller;
 
-import com.exadel.pedrolima.Cinema.System.DTO.UserRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateUserRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.UserResponse;
 import com.exadel.pedrolima.Cinema.System.service.UserService;
 import com.exadel.pedrolima.entity.enums.UserRole;
@@ -40,14 +40,14 @@ public class UserController {
 
     //POST
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest request){
+    public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest request){
         UserResponse createdUser = userService.createUser(request);
         return ResponseEntity.created(URI.create("/api/users" + createdUser.getId())).body(createdUser);
     }
 
     //PUT
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserRequest request){
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody CreateUserRequest request){
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 

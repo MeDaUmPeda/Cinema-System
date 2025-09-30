@@ -2,17 +2,17 @@ package com.exadel.pedrolima.Cinema.System.DTO;
 
 import com.exadel.pedrolima.entity.enums.UserRole;
 
-public class UserRequest {
+public class CreateUserRequest {
 
     private String name;
     private String email;
     private UserRole userRole;
 
-    public UserRequest(){
+    public CreateUserRequest(){
 
     }
 
-    public UserRequest(String name, String email, UserRole userRole) {
+    public CreateUserRequest(String name, String email, UserRole userRole) {
         this.name = name;
         this.email = email;
         this.userRole = userRole;

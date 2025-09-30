@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.controller;
 
-import com.exadel.pedrolima.Cinema.System.DTO.TicketRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateTicketRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.TicketResponse;
 import com.exadel.pedrolima.Cinema.System.service.TicketService;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +30,13 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<TicketResponse> createTicket(@RequestBody TicketRequest request) {
+    public ResponseEntity<TicketResponse> createTicket(@RequestBody CreateTicketRequest request) {
         TicketResponse createdTicket = ticketService.createTicket(request);
         return ResponseEntity.created(URI.create("api/tickets/" + createdTicket.getId())).body(createdTicket);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TicketResponse> updateTicket(@PathVariable Long id, @RequestBody TicketRequest updatedTicket){
+    public ResponseEntity<TicketResponse> updateTicket(@PathVariable Long id, @RequestBody CreateTicketRequest updatedTicket){
        return ResponseEntity.ok(ticketService.updateTicket(id, updatedTicket));
     }
 

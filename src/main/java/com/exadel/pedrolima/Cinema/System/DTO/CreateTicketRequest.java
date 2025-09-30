@@ -2,7 +2,7 @@ package com.exadel.pedrolima.Cinema.System.DTO;
 
 import com.exadel.pedrolima.entity.enums.TicketStatus;
 
-public class TicketRequest {
+public class CreateTicketRequest {
 
     private String seatNumber;
     private Long userId;

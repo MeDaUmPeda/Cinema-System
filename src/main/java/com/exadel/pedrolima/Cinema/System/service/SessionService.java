@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.service;
 
-import com.exadel.pedrolima.Cinema.System.DTO.SessionRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateSessionRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.SessionResponse;
 import com.exadel.pedrolima.Cinema.System.Exception.BadRequestException;
 import com.exadel.pedrolima.Cinema.System.Exception.ResourceNotFoundException;
@@ -11,9 +11,7 @@ import com.exadel.pedrolima.entity.Session;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +32,10 @@ public class SessionService {
     }
 
     public List<SessionResponse> getAllSessions() {
-        return sessionRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+        return sessionRepository.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     public SessionResponse getSessionById(Long id) {
@@ -42,9 +43,11 @@ public class SessionService {
         return convertToDto(session);
     }
 
-    public SessionResponse createSession(SessionRequest request) {
+    public SessionResponse createSession(CreateSessionRequest request) {
         Movie movie = movieRepository.findById(request.getMovieId())
-                .orElseThrow(() -> new ResourceNotFoundException("We can't find movie with id: " + request.getMovieId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("We can't find movie with id: " + request.getMovieId())
+                );
 
         if (request.getAvailableSeats() == null || request.getAvailableSeats() <= 0){
             throw new BadRequestException("Available seats must be greater than 0");
@@ -60,12 +63,16 @@ public class SessionService {
 
     }
 
-    public SessionResponse updateSession(Long id, SessionRequest request) {
+    public SessionResponse updateSession(Long id, CreateSessionRequest request) {
         Session session = sessionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("We can't find this session with id: " + id));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("We can't find this session with id: " + id)
+                );
 
         Movie movie = movieRepository.findById(request.getMovieId())
-                .orElseThrow(() -> new ResourceNotFoundException("We can't find movie with id: " + request.getMovieId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("We can't find movie with id: " + request.getMovieId())
+                );
 
         if(request.getAvailableSeats() == null || request.getAvailableSeats() <= 0){
             throw new BadRequestException("Available seats must be greater than 0");
@@ -81,7 +88,9 @@ public class SessionService {
 
     public void deleteSessionById(Long id) {
         Session session = sessionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("We can't find this session with id: " + id));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("We can't find this session with id: " + id)
+                );
                 sessionRepository.delete(session);
     }
 

@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.service;
 
-import com.exadel.pedrolima.Cinema.System.DTO.TicketRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateTicketRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.TicketResponse;
 import com.exadel.pedrolima.Cinema.System.Exception.ResourceNotFoundException;
 import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
@@ -33,17 +33,29 @@ public class TicketService {
     }
 
     public List<TicketResponse> getAllTickets(){
-        return ticketRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+        return ticketRepository.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     public TicketResponse getTicketById(Long id){
-        return ticketRepository.findById(id).map(this::convertToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket with id: " + id + " not found"));
+        return ticketRepository.findById(id)
+                .map(this::convertToDto)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Ticket with id: " + id + " not found")
+                );
     }
 
-    public TicketResponse createTicket(TicketRequest request){
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        Session session = sessionRepository.findById(request.getSessionId()).orElseThrow(() -> new ResourceNotFoundException("Session not found"));
+    public TicketResponse createTicket(CreateTicketRequest request){
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User not found")
+                );
+        Session session = sessionRepository.findById(request.getSessionId()).
+                orElseThrow(
+                        () -> new ResourceNotFoundException("Session not found")
+                );
 
         if(session.getAvailableSeats() <= 0){
             throw new ResourceNotFoundException("We don't have enough available seats in this session");
@@ -69,7 +81,7 @@ public class TicketService {
         ticketRepository.deleteById(id);
     }
 
-    public TicketResponse updateTicket(Long id, TicketRequest request){
+    public TicketResponse updateTicket(Long id, CreateTicketRequest request){
         return ticketRepository.findById(id).map( ticket -> {
             ticket.setSeatNumber(request.getSeatNumber());
             ticket.setStatus(request.getStatus());
@@ -79,7 +91,8 @@ public class TicketService {
     }
 
     public TicketResponse cancelTicket(Long id){
-        return ticketRepository.findById(id).map(ticket -> {
+        return ticketRepository.findById(id)
+                .map(ticket -> {
             ticket.setStatus(TicketStatus.CANCELED);
 
             Session session = ticket.getSession();
@@ -88,7 +101,10 @@ public class TicketService {
 
             Ticket saved = ticketRepository.save(ticket);
             return convertToDto(saved);
-        }).orElseThrow(() -> new ResourceNotFoundException("Ticket with id: " + id + " not found"));
+        })
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Ticket with id: " + id + " not found")
+                );
     }
 
 }

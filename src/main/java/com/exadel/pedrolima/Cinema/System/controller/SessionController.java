@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.controller;
 
-import com.exadel.pedrolima.Cinema.System.DTO.SessionRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateSessionRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.SessionResponse;
 import com.exadel.pedrolima.Cinema.System.service.SessionService;
 import org.springframework.http.ResponseEntity;
@@ -36,13 +36,13 @@ public class SessionController {
     }
 
     @PostMapping
-    public ResponseEntity<SessionResponse> createSession(@RequestBody SessionRequest request) {
+    public ResponseEntity<SessionResponse> createSession(@RequestBody CreateSessionRequest request) {
         SessionResponse createdSession = sessionService.createSession(request);
         return ResponseEntity.created(URI.create("/api/sessions" + createdSession.getId())).body(createdSession);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SessionResponse> updatedSession(@PathVariable Long id, @RequestBody SessionRequest request) {
+    public ResponseEntity<SessionResponse> updatedSession(@PathVariable Long id, @RequestBody CreateSessionRequest request) {
         return ResponseEntity.ok(sessionService.updateSession(id, request));
     }
 

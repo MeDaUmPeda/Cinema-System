@@ -1,16 +1,16 @@
 package com.exadel.pedrolima.Cinema.System.DTO;
 
-public class MovieRequest {
+public class CreateMovieRequest {
 
     private String title;
     private Integer duration;
     private String genre;
 
-    public MovieRequest(){
+    public CreateMovieRequest(){
 
     }
 
-    public MovieRequest(String title, Integer duration, String genre) {
+    public CreateMovieRequest(String title, Integer duration, String genre) {
         this.title = title;
         this.duration = duration;
         this.genre = genre;

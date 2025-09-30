@@ -1,6 +1,6 @@
 package com.exadel.pedrolima.Cinema.System.controller;
 
-import com.exadel.pedrolima.Cinema.System.DTO.MovieRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.CreateMovieRequest;
 import com.exadel.pedrolima.Cinema.System.DTO.MovieResponse;
 import com.exadel.pedrolima.Cinema.System.service.MovieService;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<MovieResponse> createMovie(@RequestBody MovieRequest request){
+    public ResponseEntity<MovieResponse> createMovie(@RequestBody CreateMovieRequest request){
         MovieResponse created = movieService.createMovie(request);
         return ResponseEntity.created(URI.create("api/movies/" + created.getId())).body(created);
     }
@@ -48,7 +48,7 @@ public class MovieController {
 //    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MovieResponse> updateMovie(@PathVariable Long id, @RequestBody MovieRequest request){
+    public ResponseEntity<MovieResponse> updateMovie(@PathVariable Long id, @RequestBody CreateMovieRequest request){
         return ResponseEntity.ok(movieService.updateMovie(id, request));
     }
 

@@ -2,17 +2,17 @@ package com.exadel.pedrolima.Cinema.System.DTO;
 
 import java.time.LocalDateTime;
 
-public class SessionRequest {
+public class CreateSessionRequest {
 
     private LocalDateTime dateTime;
     private Integer availableSeats;
     private Long movieId;
 
-    public SessionRequest(){
+    public CreateSessionRequest(){
 
     }
 
-    public SessionRequest(LocalDateTime dateTime, Integer availableSeats, Long movieId) {
+    public CreateSessionRequest(LocalDateTime dateTime, Integer availableSeats, Long movieId) {
         this.dateTime = dateTime;
         this.availableSeats = availableSeats;
         this.movieId = movieId;
