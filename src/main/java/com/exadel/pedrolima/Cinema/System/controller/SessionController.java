@@ -1,60 +1,54 @@
 package com.exadel.pedrolima.Cinema.System.controller;
 
-import com.exadel.pedrolima.Cinema.System.repository.SessionRepository;
-import com.exadel.pedrolima.entity.Session;
-import com.exadel.pedrolima.entity.Ticket;
+import com.exadel.pedrolima.Cinema.System.DTO.SessionRequest;
+import com.exadel.pedrolima.Cinema.System.DTO.SessionResponse;
+import com.exadel.pedrolima.Cinema.System.service.SessionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/sessions")
 public class SessionController {
 
-    private final SessionRepository sessionRepository;
+    private final SessionService sessionService;
 
-    public SessionController(SessionRepository sessionRepository) {
-        this.sessionRepository = sessionRepository;
+    public SessionController(SessionService sessionService) {
+        this.sessionService = sessionService;
     }
 
     @GetMapping
-   public List<Session> getAllSessions() {
-        return sessionRepository.findAll();
+   public List<SessionResponse> getAllSessions() {
+        return sessionService.getAllSessions();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Session> getSessionById(@PathVariable Long id) {
-        return sessionRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<SessionResponse> getSessionById(@PathVariable Long id) {
+        return ResponseEntity.ok(sessionService.getSessionById(id));
     }
 
-    @GetMapping("/{id}/tickets")
-    public ResponseEntity<List<Ticket>> getTicketsBySession(@PathVariable Long id) {
-        return sessionRepository.findById(id)
-                .map(session -> ResponseEntity.ok(session.getTickets()))
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/date")
+    public ResponseEntity<List<SessionResponse>> getSessionsByDate(@RequestParam("date") LocalDateTime date) {
+        return ResponseEntity.ok(sessionService.getSessionsByDate(date));
+    }
+
+    @PostMapping
+    public ResponseEntity<SessionResponse> createSession(@RequestBody SessionRequest request) {
+        SessionResponse createdSession = sessionService.createSession(request);
+        return ResponseEntity.created(URI.create("/api/sessions" + createdSession.getId())).body(createdSession);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Session> updatedSession(@PathVariable Long id, @RequestBody Session updatedSession) {
-        return sessionRepository.findById(id)
-                .map(session -> {
-                    session.setDateTime(updatedSession.getDateTime());
-                    session.setAvailableSeats(updatedSession.getAvailableSeats());
-                    return ResponseEntity.ok(sessionRepository.save(session));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<SessionResponse> updatedSession(@PathVariable Long id, @RequestBody SessionRequest request) {
+        return ResponseEntity.ok(sessionService.updateSession(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSession(@PathVariable Long id) {
-        return sessionRepository.findById(id)
-                .map(session -> {
-                    sessionRepository.delete(session);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        sessionService.deleteSessionById(id);
+        return ResponseEntity.noContent().build();
     }
 }
