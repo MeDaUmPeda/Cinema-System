@@ -75,7 +75,7 @@ public class TicketService {
     }
 
     public void deleteTicketById(Long id){
-        if(ticketRepository.existsById(id)){
+        if(!ticketRepository.existsById(id)){
             throw new ResourceNotFoundException("Ticket with id: " + id + " not found");
         }
         ticketRepository.deleteById(id);
