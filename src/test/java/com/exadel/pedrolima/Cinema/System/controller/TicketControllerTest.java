@@ -118,5 +118,5 @@ public class TicketControllerTest {
         mockMvc.perform(delete("/api/tickets/10"))
                 .andExpect(status().isNotFound());
     }
-    
+
 }
