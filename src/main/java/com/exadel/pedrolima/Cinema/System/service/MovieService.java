@@ -76,11 +76,12 @@ public class MovieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + id + " not found"));
     }
 
-    public void deleteMovie(Long id){
+    public boolean deleteMovie(Long id){
         if(!movieRepository.existsById(id)){
             throw new ResourceNotFoundException("Movie with id " + id + " not found");
         }
         movieRepository.deleteById(id);
+        return true;
     }
 
 }

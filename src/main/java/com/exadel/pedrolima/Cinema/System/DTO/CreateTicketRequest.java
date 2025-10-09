@@ -9,6 +9,13 @@ public class CreateTicketRequest {
     private TicketStatus status;
     private Long sessionId;
 
+    public CreateTicketRequest(String seatNumber, Long userId, TicketStatus status, Long sessionId) {
+        this.seatNumber = seatNumber;
+        this.userId = userId;
+        this.status = status;
+        this.sessionId = sessionId;
+    }
+
     public Long getUserId() {
         return userId;
     }
